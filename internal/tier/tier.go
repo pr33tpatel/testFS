@@ -10,10 +10,10 @@ const (
 )
 
 type Stats struct {
+	TierType   TierType
 	QueueDepth int
 	LatencyMs  float64
 	FreeBytes  int64
-	TierType   TierType
 }
 
 type StorageTier interface {
