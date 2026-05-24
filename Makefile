@@ -5,11 +5,15 @@
 # make run-server   # run the server directly (no compile)
 # make test         # run all tests
 # make test-race    # run tests with the race detector on
+# make proto 				# regenerate .proto Go bindings
 # make lint         # format + vet all code
 # make clean        # remove bin/
 # -------
 
 BINARY_DIR := bin
+PROTO_DIR := proto
+GEN_DIR := gen/testfs
+
 NODE_BIN   := $(BINARY_DIR)/node
 SERVER_BIN := $(BINARY_DIR)/server
 
@@ -41,6 +45,14 @@ test:
 
 test-race:
 	go test -race ./...
+
+## Proto
+proto:
+	protoc \
+		--go_out=$(GEN_DIR) --go_opt=paths=source_relative \
+		--go-grpc_out=$(GEN_DIR) --go-grpc_opt=paths=source_relative \
+		--proto_path=$(PROTO_DIR) \
+		$(PROTO_DIR)/testfs.proto
 
 ## Code quality
 fmt:
