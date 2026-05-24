@@ -17,7 +17,7 @@ GEN_DIR := gen/testfs
 NODE_BIN   := $(BINARY_DIR)/node
 SERVER_BIN := $(BINARY_DIR)/server
 
-.PHONY: all build build-node build-server run-node run-server test clean fmt vet
+.PHONY: all build build-node build-server run-node run-server test clean fmt vet proto
 
 all: build
 

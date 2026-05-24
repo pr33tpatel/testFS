@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package testfs;
+
+option go_package = "github.com/pr33tpatel/testFS/gen/testfs";
+
+// Shared message types
+message TierStats {
+  string tier_type   = 1;  // "memory", "optane","nvme", "hdd"
+  int32  queue_depth = 2;
+  double latency_ms  = 3;
+  int64  free_bytes  = 4;
+}
+
+// ServerService — called BY nodes, served BY central server
+service ServerService {
+  rpc RegisterNode   (RegisterRequest)    returns (RegisterResponse);
+  rpc Heartbeat      (HeartbeatRequest)   returns (HeartbeatResponse);
+  rpc ReportChunk    (ReportChunkRequest) returns (ReportChunkResponse);
+}
+
+message RegisterRequest {
+  string node_id = 1;
+  string addr    = 2;  // "host:port" the node listens on for NodeService
+}
+
+message RegisterResponse {
+  bool   accepted = 1;
+  string message  = 2;
+}
+
+message HeartbeatRequest {
+  string             node_id    = 1;
+  repeated TierStats tier_stats = 2;
+}
+
+message HeartbeatResponse {
+  bool ok = 1;
+}
+
+message ReportChunkRequest {
+  string node_id   = 1;
+  string chunk_id  = 2;
+  string tier_type = 3;
+}
+
+message ReportChunkResponse {
+  bool ok = 1;
+}
+
+// CoordService — called BY clients, served BY central server
+service CoordService {
+  rpc PutFile (PutFileRequest)  returns (PutFileResponse);
+  rpc GetFile (GetFileRequest)  returns (GetFileResponse);
+}
+
+message PutFileRequest {
+  string filename = 1;
+  int64  size     = 2;
+}
+
+message PutFileResponse {
+  string chunk_id  = 1;  // assigned chunk ID
+  string node_id   = 2;  // which node to write to
+  string node_addr = 3;  // host:port of the node
+}
+
+message GetFileRequest {
+  string filename = 1;
+}
+
+message GetFileResponse {
+  string chunk_id  = 1;
+  string node_id   = 2;
+  string node_addr = 3;
+}
+
+// NodeService — called BY clients/server, served BY nodes
+service NodeService {
+  rpc StoreChunk (StoreChunkRequest) returns (StoreChunkResponse);
+  rpc FetchChunk (FetchChunkRequest) returns (FetchChunkResponse);
+}
+
+message StoreChunkRequest {
+  string chunk_id = 1;
+  bytes  data     = 2;
+}
+
+message StoreChunkResponse {
+  bool   ok      = 1;
+  string message = 2;
+}
+
+message FetchChunkRequest {
+  string chunk_id = 1;
+}
+
+message FetchChunkResponse {
+  bool   ok      = 1;
+  bytes  data    = 2;
+  string message = 3;
+}
