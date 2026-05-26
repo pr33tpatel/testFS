@@ -1,0 +1,11 @@
+DIAGRAM:
+Client -> Server: "I want to PUT file.txt"
+                        │
+              nodeRegistry.GetAll()        <- who's available?
+              policy.SelectNode(nodes)     <- pick one
+              chunkRegistry.Assign(id, entry) <- record the decision
+                        │
+Server -> Client: "send your data to node-1 at localhost:9001"
+                        │
+Client -> Node:   StoreChunk(chunkID, data)
+Node -> Server:   "I stored chunk-abc123 on tier memory"  (ReportChunk RPC)
