@@ -24,7 +24,7 @@ type PlacementPolicy interface {
 
 // PolicyOpts is passed to any policy constructor that need configuraiton,
 // simple policies may ignore it, but complex/configurable policies use it for weights/params
-type PolicyOptr struct {
+type PolicyOpts struct {
 	// Weights for composite policies (key = signal name, value = weight)
 	Weights map[string]float64
 
